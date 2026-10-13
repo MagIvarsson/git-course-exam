@@ -1,0 +1,29 @@
+# R session files
+.Rhistory
+.RData
+.Ruserdata
+
+# RStudio local settings
+.Rproj.user/
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# R Markdown / Quarto generated files
+*_cache/
+*_files/
+.quarto/
+
+# R package build/check output
+*.Rcheck/
+*.tar.gz
+
+# Local environment variables and secrets
+.Renviron
+.env
+.env.*
+
+# Temporary files
+*.tmp
+*.bak
