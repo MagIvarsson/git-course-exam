@@ -29,5 +29,6 @@ Thumbs.db
 *.bak
 
 # Files generated from script
-barnulf_synthetic_clean.rds
+data/barnulf_synthetic_clean.rds
 check-data-quality.html
+data/data_with_mhp_factor.rds
