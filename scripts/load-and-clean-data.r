@@ -121,22 +121,22 @@ df_barnulf_synth_indices_4 <- df_barnulf_synth_indices_3 %>%
     )
 )
 
-# Sense of safety 
-df_barnulf_selected_12_indices <- df_barnulf_selected_11_indices %>%
+# Create variable with sum score of items relating to sense of safety 
+df_barnulf_synth_indices_5 <- df_barnulf_synth_indices_4 %>%
   rowwise() %>%
   mutate(
     sense_safety = sum(across(starts_with("safe_"))),
     .keep="unused"
     ) %>%
    
-###Parental physcial health
-#Preregistration: "Each possible type of pain to is answered as yes/no. Items are answered as yes=1 or no=0. Items will be summed, and the total sum used."
+# Create variable with sum score of items relating to parental physcial health
+# Preregistration: "Each possible type of pain to is answered as yes/no. Items are answered as yes=1 or no=0. Items will be summed, and the total sum used."
   mutate(parent_pain = sum(across(c(parent_pain_arms_legs, parent_pain_back, parent_pain_shoulders_neck))),
          .keep = "unused"
   ) %>%
    
-###SES
-#Preregistration: "An index will be created for SES with a sum score where a higher score indicates a lower SES status."
-  mutate(ses = sum(across(starts_with("ses_"))),
+# Create sum score of SES related variables
+# Preregistration: "An index will be created for SES with a sum score where a higher score indicates a lower SES status."
+  dplyr::mutate(ses = sum(across(starts_with("ses_"))),
          .keep = "unused"
   )
