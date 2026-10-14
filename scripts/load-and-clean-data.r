@@ -6,43 +6,18 @@ library("psych")
 # Load data
 df_barnulf_synth <- readr::read_csv("data/barnulf_synthetic.csv")
 
-# Quick overview of data
-skimr::skim(df_barnulf_synth)
-
-# Visualize with scatter plots
-# Define function that creates 12 bar plots at a time
-overview_barplot_barnulf <- function(df, vars = names(df), start = 1, n = 12) {
-
-  vars <- intersect(vars, names(df))
-  vars <- vars[start:min(start + n - 1, length(vars))]
-
-  df %>%
-    dplyr::select(all_of(vars)) %>%
-    pivot_longer(
-      everything(),
-      names_to = "variable",
-      values_to = "value"
-    ) %>%
-    filter(!is.na(value)) %>%
-    ggplot(aes(x = value)) +
-    geom_bar() +
-    facet_wrap(~variable, ncol = 3, scales = "free_x") +
-    labs(x = "Response", y = "Frequency") +
-    theme_minimal()
-}
-
-# Plot variables 12 at a time (except ID)
-overview_barplot_barnulf(df_barnulf_synth, start = 2)
-overview_barplot_barnulf(df_barnulf_synth, start = 14)
-overview_barplot_barnulf(df_barnulf_synth, start = 26)
-overview_barplot_barnulf(df_barnulf_synth, start = 38)
-overview_barplot_barnulf(df_barnulf_synth, start = 50)
-overview_barplot_barnulf(df_barnulf_synth, start = 62)
-overview_barplot_barnulf(df_barnulf_synth, start = 74)
-overview_barplot_barnulf(df_barnulf_synth, start = 86)
+# Remove variables not needed for the current project
+df_barnulf_synth_1 <- df_barnulf_synth %>%
+  dplyr::select(
+    -c(
+        starts_with("wellbeing"),
+        ses_household_group,
+        mental_health_problems_old
+    )
+  )
 
 # Setting up indices of variables according to preregistration
-df_barnulf_synth_indices_1 <- df_barnulf_synth %>%
+df_barnulf_synth_indices_1 <- df_barnulf_synth_1 %>%
   rowwise() %>%
   mutate(
     
@@ -138,11 +113,7 @@ df_barnulf_synth_indices_5 <- df_barnulf_synth_indices_4 %>%
 # Create sum score of SES related variables
 # Preregistration: "An index will be created for SES with a sum score where a higher score indicates a lower SES status."
   dplyr::mutate(ses = sum(across(c(ses_cash_reserve,ses_financial_problems,ses_further_education_parent,ses_overcrowding))),
-         .keep = "unused"
-  ) %>%
-  
-# Remove SES household group from analysis at this stage (difficult to interpret)
-dplyr::select(-ses_household_group)
+         .keep = "unused")
 
 # Save cleaned up data frame to file
-saveRDS(df_barnulf_synth_indices_5, "mydata.rds")
+saveRDS(df_barnulf_synth_indices_5, "data/barnulf_synthetic_clean.rds")
