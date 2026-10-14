@@ -27,3 +27,6 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.bak
+
+# Files generated from script
+barnulf_synthetic_clean.rds
