@@ -137,6 +137,12 @@ df_barnulf_synth_indices_5 <- df_barnulf_synth_indices_4 %>%
    
 # Create sum score of SES related variables
 # Preregistration: "An index will be created for SES with a sum score where a higher score indicates a lower SES status."
-  dplyr::mutate(ses = sum(across(starts_with("ses_"))),
+  dplyr::mutate(ses = sum(across(c(ses_cash_reserve,ses_financial_problems,ses_further_education_parent,ses_overcrowding))),
          .keep = "unused"
-  )
+  ) %>%
+  
+# Remove SES household group from analysis at this stage (difficult to interpret)
+dplyr::select(-ses_household_group)
+
+# Save cleaned up data frame to file
+saveRDS(df_barnulf_synth_indices_5, "mydata.rds")
