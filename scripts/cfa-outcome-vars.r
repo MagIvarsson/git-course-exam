@@ -5,7 +5,7 @@ library("lavaan")
 set.seed(666)
 
 # Loading the cleaned up data
-df_barnulf_synth_indices_5 <- readRDS("data/barnulf_synthetic_clean.rds")
+df_barnulf_synth_indices_5 <- readRDS("../data/barnulf_synthetic_clean.rds")
 
 # Define the mental health problems model
 mental_health_problems_model <- 'mental_health_problems =~ mental_health_problem_sad + mental_health_problem_concentrate + mental_health_problem_nervous + mental_health_problem_stress + mental_health_problem_bad_sleep + mental_health_problem_fall_asleep + mental_health_problem_tired + mental_health_problem_headache + mental_health_problem_stomache'
@@ -100,9 +100,12 @@ print(mhp_mi_5)
 # Create factor scores based on final model
 df_mental_health_problem_factor <- lavPredict(mhp_lav_output_5, type = "lv")
 
-#combine with data frame
+# Combine with the rest of data
 df_barnulf_synth_indices_6 <- df_barnulf_synth_indices_5 %>%
   dplyr::bind_cols(., df_mental_health_problem_factor) %>%
 
-#remove the indicators and old factor scores from df
+# Remove the indicators df
   dplyr::select(-starts_with("mental_health_problem_"))
+
+# Save as new data file
+saveRDS(df_barnulf_synth_indices_6, "data/data_with_mhp_factor.rds")
