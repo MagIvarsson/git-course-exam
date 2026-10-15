@@ -4,6 +4,7 @@ format: html
 execute:
   echo: true
   warning: false
+output-dir: output
 ---
 
 ## Load data
