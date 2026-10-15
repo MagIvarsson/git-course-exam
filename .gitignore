@@ -23,6 +23,7 @@ Thumbs.db
 .Renviron
 .env
 .env.*
+renv/
 
 # Temporary files
 *.tmp
