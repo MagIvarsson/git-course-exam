@@ -35,3 +35,4 @@ output/check-data-quality.html
 data/data_with_mhp_factor.rds
 output/descriptive_table.html
 data/lasso_results.rds
+output/*.png
