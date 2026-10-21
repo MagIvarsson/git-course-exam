@@ -1,6 +1,6 @@
-library(dplyr)
-library(knitr)
-library(kableExtra)
+library("dplyr")
+library("knitr")
+library("kableExtra")
 
 # Load data
 df_for_table <- readRDS("data/barnulf_synthetic_clean.rds")
