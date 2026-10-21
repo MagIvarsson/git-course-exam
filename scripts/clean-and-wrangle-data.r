@@ -114,5 +114,79 @@ df_barnulf_synth_indices_5 <- df_barnulf_synth_indices_4 %>%
   dplyr::mutate(ses = sum(across(c(ses_cash_reserve,ses_financial_problems,ses_further_education_parent,ses_overcrowding))),
          .keep = "unused")
 
+# Transform disability-variable in line with what is stipulated in the preregistration
+# Preregistration: "If one or more groups do not contain enough participants (n<100), will be merged with category 7 (other disability) (except for: if both hearing and visual impairment groups are low in numbers they will be merged to a perceptual disability group)."
+
+# Create empty broader impairment category from the original "other" impairment variable. This ensures the variable exists even if none of the subsequent conditional recoding steps are triggered.
+df_barnulf_synth_indices_5 <- df_barnulf_synth_indices_5 %>%
+  dplyr::mutate(
+    child_impairment_other_broader = child_impairment_other
+  )
+
+# Create a combined sensory impairment indicator if fewer than 100 participants report vision impairment OR fewer than 100 report having a hearing impairment
+if(
+  sum(df_barnulf_synth_indices_5$child_impairment_vision == 1)<100 | sum(df_barnulf_synth_indices_5$child_impairment_hearing == 1)<100) {
+  df_barnulf_synth_indices_5 <- df_barnulf_synth_indices_5 %>% 
+    dplyr::mutate(
+      child_impairment_sensory = if_else(
+        child_impairment_vision == 1,
+        1, 
+        if_else(
+          child_impairment_hearing == 1,
+          1,
+          0)
+        ),
+        .keep = "unused"
+      )
+  }
+
+# If fewer than 100 participants reported any sensory impairment, combine it with other impairments in the broader "other impairment" category
+if(
+  "child_impairment_sensory" %in% colnames(df_barnulf_synth_indices_5) & sum(df_barnulf_synth_indices_5$child_impairment_sensory == 1)<100) {
+  df_barnulf_synth_indices_5 <- df_barnulf_synth_indices_5 %>%
+    dplyr::mutate(child_impairment_other_broader = if_else(child_impairment_other == 1 | child_impairment_sensory == 1, 1, child_impairment_other),
+           .keep = "unused")
+}
+
+# If fewer than 100 participants reported asthma or allergy, combine this category with the broader "other impairment" category.
+if(sum(df_barnulf_synth_indices_5$child_impairment_asthma_allergy == 1)<100) {
+  df_barnulf_synth_indices_5 <- df_barnulf_synth_indices_5 %>%
+    mutate(child_impairment_other_broader = if_else(child_impairment_other_broader == 1 | child_impairment_asthma_allergy == 1, 1, child_impairment_other_broader),
+           .keep = "unused")
+}
+
+# If fewer than 100 participants reported ADHD or autism, combine this category with the broader "other impairment" category.
+if(sum(df_barnulf_synth_indices_5$child_impairment_adhd_asd == 1)<100) {
+  df_barnulf_synth_indices_5 <- df_barnulf_synth_indices_5 %>%
+    mutate(child_impairment_other_broader = if_else(child_impairment_other_broader == 1 | child_impairment_adhd_asd == 1, 1, child_impairment_other_broader),
+           .keep = "unused")
+}
+
+# If fewer than 100 participants report having dyslexia or dyscalculia, combine this category with the broader "other impairment" category.
+if(sum(df_barnulf_synth_indices_5$child_impairment_dyslexia_dyscalculia == 1)<100) {
+  df_barnulf_synth_indices_5 <- df_barnulf_synth_indices_5 %>%
+    mutate(child_impairment_other_broader = if_else(child_impairment_other_broader == 1 | child_impairment_dyslexia_dyscalculia == 1, 1, child_impairment_other_broader),
+           .keep = "unused")
+}
+
+# If fewer than 100 participants report having a mobility impairment, combine this category with the broader "other impairment" category.
+if(sum(df_barnulf_synth_indices_5$child_impairment_mobility == 1)<100) {
+  df_barnulf_synth_indices_5 <- df_barnulf_synth_indices_5 %>%
+    mutate(child_impairment_other_broader = if_else(child_impairment_other_broader == 1 | child_impairment_mobility == 1, 1, child_impairment_other_broader),
+           .keep = "unused")
+}
+
+# Create variable indicating that the participant has at least 1 impairment
+df_barnulf_synth_indices_5 <- df_barnulf_synth_indices_5 %>%
+  dplyr::mutate(
+    child_impairment_any = if_else(
+      if_any(starts_with("child_impairment"), ~ .x == 1),
+      1L,
+      0L
+    ),
+    .keep = "all"
+  ) %>%
+  ungroup()
+
 # Save cleaned up data frame to file
 saveRDS(df_barnulf_synth_indices_5, "data/barnulf_synthetic_clean.rds")
