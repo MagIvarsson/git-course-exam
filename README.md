@@ -51,4 +51,8 @@ By running this command, all scripts in /scripts are executed in the logical ord
 
 - `descriptives.r` reads `/data/barnulf_synthetic_clean.rds` and creates a table with descriptive statistics of the participants grouped by the year data was collected in´and exports it in HTML format to `/outcome/descriptive_table.html`.
 
-- ´cfa-outcome-vars.r´ reads `/data/barnulf_synthetic_clean.rds` and runs a series of confirmatory factor analyses on 9 items in BarnULF, itaretively adding residual correlations between indicators to the model until no more plausible modifications can be made to the model with the potential to improve model fit, and then extracts a factor score based on the final model, and adds it as a variable to the data. The data is then written to `data/data_with_mhp_factor.rds`.
+- `cfa-outcome-vars.r` reads `data/barnulf_synthetic_clean.rds` and runs a series of confirmatory factor analyses on 9 items in BarnULF, itaretively adding residual correlations between indicators to the model until no more plausible modifications can be made to the model with the potential to improve model fit, and then extracts a factor score based on the final model, and adds it as a variable to the data. The data is then written to `data/data_with_mhp_factor.rds`.
+
+- `lasso-regression.r` reads `data/data_with_mhp_factor.rds` and runs LASSO regressions for the specified groups to identify variables associated with the mental health problems factor score. The results, including coefficient paths and selected model information, are saved as `data/lasso_results.rds` for further analysis and visualization.
+
+- `lasso-figures.r` reads `data/lasso_results.rds` and creates coefficient path plots for the different disability groups (with n>100 participants), with individual coefficients distinguished by colour. The figures are exported as PNG files to `output/`.
