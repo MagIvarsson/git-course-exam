@@ -10,7 +10,7 @@ output-dir: output
 ## Load data
 
 ```{r}
-library(tidyverse)
+library("tidyverse")
 
 df_barnulf_synth <- readr::read_csv("../data/barnulf_synthetic.csv")
 ```
