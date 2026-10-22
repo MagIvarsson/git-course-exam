@@ -1,5 +1,8 @@
 # Purpose
-This repository contains all code, synthesized data and other resources related to the BarnULF study conducted at the Department of Disability Research at Linköping University. The study aims to investigate differences in predictors of mental health problems between children and adolescents with and without disabilities using data from a Swedish public registry (BarnULF) collected in 2013-2015 and 2017-2019. The data was synthesized to mimick the properties in the original data set.
+This repository contains all code, synthesized data and other resources related to the BarnULF study conducted at the Department of Disability Research at Linköping University. The study aims to investigate differences in predictors of mental health problems between children and adolescents with and without disabilities using data from a Swedish public registry (BarnULF) collected in 2013-2016 and 2018-2019.
+
+# Data
+`barnulf_synthetic.csv` in `/data` contains synthetic data that was created to mimick properties in the real data, which could not be shared for ethical reasons. Variables in the data are described in `data_key.txt`
 
 # Preregistration
 The study was preregistered at [OSF](https://osf.io/96yqx/overview).
@@ -31,7 +34,7 @@ To run the full pipeline from start to finish, execute the following from the re
 Rscript run_pipeline.R
 ```
 
-By running this command, all scripts in /scripts are executed in the logical order (see flowchart below). It is also possible to run scripts in the /scripts folder individually, although some of them depend on objects created by other scripts.
+By running this command, all scripts in `/scripts` are executed in the logical order (see flowchart below). It is also possible to run scripts in the `/scripts` folder individually, although some of them depend on objects created by other scripts.
 
 **Figure**
 
