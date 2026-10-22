@@ -1,0 +1,187 @@
+---
+title: "How do factors associated with mental health problems differ between children with and without disabilities?"
+date: today
+format:
+  html:
+    page-layout: full
+    max-width: 1600px
+    self-contained: true
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{r}
+#| label: setup
+#| include: FALSE
+
+library("knitr")
+library("xml2")
+library("magick")
+library("kableExtra")
+```
+
+# Background and aim
+Mental health problems are prevalent in children with disabilities. Many studies have focused on identifying predictors that are relatively non-modifiable, such as age and parental education. However, for the purpose of developing psychological and pedagogical interventions, identifying potentially modifiable factors, such as participation, may be more important. Further, predictors of mental health problems may differ between children with and without disabilities, potentially informing the adaptation of interventions for different disability groups. This study aims to investigate differences in predictors of mental health problems between children and adolescents with and without disabilities.
+
+# Methods
+The study uses a cross-sectional design to analyse data from different cohorts collected between 2013 and 2019 through the Swedish Child Living Conditions Survey (BarnULF) and the linked survey on Living Conditions (ULF/SILC). BarnULF is an annual interview-based survey of children aged 10–18 years, linked to information provided by their participating caregivers (in ULF/SILC), that is administered by Statistics Sweden (SCB). The survey include questions about everyday experiences, including school, leisure activities, family, firends, and mental health.
+
+## Data analysis
+LASSO regression was used to identify predictors of mental health problems separately across five disability groups and a group of children without disabilities. For each group, 28 variables were entered into the models as candidate predictors. Predictors were standardized, and the penalty parameter was selected using cross-validation, with the one-standard-error rule ($\lambda_{\text{1se}}$) used to favour a more parsimonious model.
+
+# Results
+
+```{r}
+#| label: descriptive-table
+#| results: asis
+
+# Read the HTML file containing the descriptive table
+html_table_doc <- xml2::read_html("output/descriptive_table.html")
+
+# Extract the first HTML <table> element from the document
+desc_table <- xml2::xml_find_first(html_table_doc, ".//table")
+
+# Convert the extracted table to HTML and include it as-is in the rendered report
+knitr::asis_output(as.character(desc_table))
+```
+
+## LASSO
+
+```{r}
+#| include: FALSE
+#| fig-cap: "Descriptive statistics per year" 
+# Locate the six LASSO coefficient-path plots
+plot_files <- sort(
+  list.files(
+    "output",
+    pattern = "^lasso_paths_.*\\.png$",
+    full.names = TRUE
+  )
+)
+
+# Exclude the previously generated combined image
+plot_files <- plot_files[
+  basename(plot_files) != "lasso_paths_combined.png"
+]
+
+stopifnot(length(plot_files) == 6)
+
+# Read the six plots at their original resolution
+plots <- lapply(plot_files, magick::image_read)
+
+# Combine into a 2-column by 3-row grid
+combined <- magick::image_montage(
+  magick::image_join(plots),
+  tile = "2x3",
+  geometry = "+10+10"
+) |>
+  magick::image_background("white")
+
+# Save the combined figure
+magick::image_write(
+  combined,
+  path = "output/lasso_paths_combined.png",
+  format = "png"
+)
+```
+
+```{r}
+#| label: fig-lasso-paths
+#| fig-cap: "LASSO coefficient paths by group"
+#| fig-alt: "Six panels showing how estimated coefficients change as the regularization parameter varies."
+#| fig-width: 10
+#| fig-height: 12
+
+knitr::include_graphics("output/lasso_paths_combined.png")
+```
+
+```{r}
+#| label: tbl-lasso-coefficients
+#| echo: false
+#| fig-cap: "LASSO coefficients by group"
+# Load the saved LASSO results
+lasso_results <- readRDS("data/lasso_results.rds")
+
+# Define the six groups in the desired order
+groups <- c(
+  "td",
+  "asthma_allergy",
+  "adhd_asd",
+  "dyslexia_dyscalculia",
+  "other_broader",
+  "sensory"
+)
+
+# Extract coefficients from each model
+coefficient_list <- lapply(groups, function(group) {
+  coefficients <- as.matrix(lasso_results[[group]]$coefficients)[, 1]
+  coefficients
+})
+
+names(coefficient_list) <- groups
+
+# Collect all predictor names across the six models
+predictors <- sort(unique(unlist(
+  lapply(coefficient_list, names)
+)))
+
+# Exclude the intercept
+predictors <- setdiff(predictors, "(Intercept)")
+
+# Create a wide table, using zero for coefficients not selected
+# by a particular LASSO model
+coefficient_table <- data.frame(
+  Predictor = predictors,
+  do.call(
+    cbind,
+    lapply(coefficient_list, function(x) {
+      values <- x[predictors]
+      values[is.na(values)] <- 0
+      as.numeric(values)
+    })
+  ),
+  check.names = FALSE
+)
+
+names(coefficient_table) <- c("Predictor", groups)
+
+# Replace zero coefficients with NA
+coefficient_table[-1] <- lapply(
+  coefficient_table[-1],
+  function(x) {
+    x[x == 0] <- NA_real_
+    x
+  }
+)
+
+# Remove rows where all six coefficients are NA
+coefficient_table <- coefficient_table[
+  rowSums(!is.na(coefficient_table[-1])) > 0,
+]
+
+# Create the table
+coefficient_table %>%
+  kable(
+    format = "html",
+    digits = 3,
+    align = c("l", rep("c", ncol(coefficient_table) - 1)),
+    escape = TRUE,
+    na = ""
+  ) %>%
+  kable_styling(
+    bootstrap_options = NULL,
+    full_width = FALSE,
+    position = "left"
+  ) %>%
+  row_spec(
+    0,
+    bold = TRUE,
+    extra_css = "border-top: 1px solid black; border-bottom: 1px solid black;"
+  ) %>%
+  row_spec(
+    nrow(coefficient_table),
+    extra_css = "border-bottom: 1px solid black;"
+  )
+```
