@@ -1,31 +1,37 @@
 # Purpose
-This repository contains all code, synthesized data and other resources related to the BarnULF study conducted at the Department of Disability Research at Linköping University. The study aims to investigate differences in predictors of mental health problems between children and adolescents with and without disabilities using data from a Swedish public registry (BarnULF) collected in 2013-2016 and 2018-2019.
+
+This repository contains all code, synthetic data and other resources related to the BarnULF study conducted at the Department of Disability Research at Linköping University. The study aims to investigate differences in predictors of mental health problems between children and adolescents with and without disabilities using data from a Swedish national survey (BarnULF) collected in 2013-2016 and 2018-2019.
 
 # Data
-`barnulf_synthetic.csv` in `/data` contains synthetic data that was created to mimick properties in the real data, which could not be shared for ethical reasons. Variables in the data are described in `data_key.txt`
+
+`barnulf_synthetic.csv` in `data` contains synthetic data that was created to mimic properties in the real data, which could not be shared for ethical reasons. Variables in the data are described in `codebook.md`.
 
 # Preregistration
+
 The study was preregistered at [OSF](https://osf.io/96yqx/overview).
 
 # Dependencies
 
 ## Software
-- [R](https://cran.r-project.org/) (developed on 4.5.2)
-- [Quarto](https://quarto.org/) (for rendering `.qmd` reports)
+
+-   [R](https://cran.r-project.org/) (developed on 4.5.2)
+-   [Quarto](https://quarto.org/) (for rendering `.qmd` reports)
 
 ## R packages
-- `tidyverse` for data manipulation (dplyr), figures (ggplot2), etc.
-- `psych` for explorative factor analyses
-- `lavaan` for confirmatory factor analyses
-- `knitr` for rendering code chunks and integrating R outputs into documents
-- `kableExtra` for styling and formatting tables
-- `glmnet` for fitting LASSO regressions
-- `ggrepel` prevent labels in ggplot figures from overlapping
-- `xml2` for parsing and manipulating XML documents
-- `magick` for image processing and manipulation
+
+-   `tidyverse` for data manipulation (`dplyr`), figures (`ggplot2`), etc.
+-   `psych` for exploratory factor analyses
+-   `lavaan` for confirmatory factor analyses
+-   `knitr` for rendering code chunks and integrating R outputs into documents
+-   `kableExtra` for styling and formatting tables
+-   `glmnet` for fitting LASSO regressions
+-   `ggrepel` for preventing labels in `ggplot2` figures from overlapping
+-   `xml2` for parsing and manipulating XML documents
+-   `magick` for image processing and manipulation
 
 Install all packages at once:
-```r
+
+``` r
 install.packages(c("tidyverse", "quarto", "psych", "lavaan", "knitr", "kableExtra", "glmnet", "ggrepel", "xml2", "magick"))
 ```
 
@@ -33,32 +39,34 @@ install.packages(c("tidyverse", "quarto", "psych", "lavaan", "knitr", "kableExtr
 
 To run the full pipeline from start to finish, execute the following from the repo root:
 
-```r
-Rscript run_pipeline.R
+``` r
+Rscript run-pipeline.R
 ```
 
-By running this command, all scripts in `/scripts` are executed in the logical order (see flowchart below). It is also possible to run scripts in the `/scripts` folder individually, although some of them depend on objects created by other scripts.
+By running this command, all scripts in `scripts` are executed in the logical order (see flowchart below). It is also possible to run scripts in the `scripts` folder individually, although some of them depend on objects created by other scripts.
 
-**Figure**
+**Figure 1.** Flowchart of the analysis pipeline and its outputs.
 
-*Flowchart of scripts in pipe and their outputs*
-
-<img height="700" alt="Flowchart of scripts in BarnULF project" src="figure-pipe.png" />
+<img src="figure-pipe.png" alt="Flowchart of scripts in BarnULF project" height="700"/>
 
 # Scripts
 
-`run-pipeline.r` is the master script that run all the other scripts in the correct order. The scripts in /scripts perform the following actions:
+`run-pipeline.r` is the master script that runs all the other scripts in the correct order. The scripts in `scripts` perform the following actions:
 
-- `clean-and-wrangle-data.r` reads `/data/barnulf_synthetic.csv` and removes variables from the data that are not needed for the purpose of this poject, transforms, and combines other variables according to the description in the preregistration by summing them or calculating factor scores (with exploratory factor analyses) and writes the cleaned up data to `/data/barnulf_synthetic_clean.rds`.
+-   `clean-and-wrangle-data.r` reads `data/barnulf_synthetic.csv`, removes variables that are not needed for this project, and transforms and combines other variables according to the preregistration. This includes summing items and calculating factor scores based on exploratory factor analyses. The cleaned data are saved to `data/barnulf_synthetic_clean.rds`.
 
-- `check-data-quality.qmd` reads `/data/barnulf_synthetic.csv` and creates a very basic data quality report with histograms (all included variables are categorical or ordinal) and descriptive statistics, informing the data wrangling in ´clean-and-wrangle-data.r´. Output is stored as `/output/check-data-quality.html`
+-   `check-data-quality.qmd` reads `data/barnulf_synthetic.csv` and produces a basic data quality report containing histograms and descriptive statistics. As all included variables are categorical or ordinal, the report provides an initial overview of their distributions and informs the data-wrangling process in `clean-and-wrangle-data.r`. The rendered report is saved to `output/check-data-quality.html`.
 
-- `render-data-quality-check.r` renders `check-data-quality.qmd` in HTML.
+-   `render-data-quality-check.r` renders `check-data-quality.qmd` in HTML format.
 
-- `descriptives.r` reads `/data/barnulf_synthetic_clean.rds` and creates a table with descriptive statistics of the participants grouped by the year data was collected in´and exports it in HTML format to `/outcome/descriptive_table.html`.
+-   `descriptives.r` reads `data/barnulf_synthetic_clean.rds` and creates a table of descriptive statistics for participants, grouped by year of data collection. The table is exported in HTML format to `output/descriptive_table.html`.
 
-- `cfa-outcome-vars.r` reads `data/barnulf_synthetic_clean.rds` and runs a series of confirmatory factor analyses on 9 items in BarnULF, itaretively adding residual correlations between indicators to the model until no more plausible modifications can be made to the model with the potential to improve model fit, and then extracts a factor score based on the final model, and adds it as a variable to the data. The data is then written to `data/data_with_mhp_factor.rds`.
+-   `cfa-outcome-vars.r` reads `data/barnulf_synthetic_clean.rds` and runs a series of confirmatory factor analyses (CFAs) on nine BarnULF items. Residual correlations are iteratively added to the model to investigate potential improvements in model fit. A factor score is then extracted from the final model and added to the dataset. The resulting data are saved to `data/data_with_mhp_factor.rds`.
 
-- `lasso-regression.r` reads `data/data_with_mhp_factor.rds` and runs LASSO regressions for the specified groups to identify variables associated with the mental health problems factor score. The results, including coefficient paths and selected model information, are saved as `data/lasso_results.rds` for further analysis and visualization.
+-   `lasso-regression.r` reads `data/data_with_mhp_factor.rds` and runs LASSO regressions for the specified groups to identify predictors of the mental health problems factor score. The results, including coefficient estimates and selected model information, are saved to `data/lasso_results.rds` for further analysis and visualization.
 
-- `lasso-figures.r` reads `data/lasso_results.rds` and creates coefficient path plots for the different disability groups (with n>100 participants), with individual coefficients distinguished by colour. The figures are exported as PNG files to `output/`.
+-   `lasso-figures.r` reads `data/lasso_results.rds` and creates coefficient-path plots for the different disability groups with more than 100 participants. Individual coefficients are distinguished by colour. The figures are exported as PNG files to `output`.
+
+-   `summary-report.qmd` summarizes the results by reading `lasso_results.rds`, creating a table of LASSO regression coefficients, combining and displaying the figures generated by `lasso-figures.r`, and including `descriptive_table.html`.
+
+-   `render-summary-report.r` renders `summary-report.qmd` in HTML format.
