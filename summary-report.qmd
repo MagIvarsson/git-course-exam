@@ -32,10 +32,12 @@ The study uses a cross-sectional design to analyse data from different cohorts c
 LASSO regression was used to identify predictors of mental health problems separately across five disability groups and a group of children without disabilities. For each group, 28 variables were entered into the models as candidate predictors. Predictors were standardized, and the penalty parameter was selected using cross-validation, with the one-standard-error rule ($\lambda_{\text{1se}}$) used to favour a more parsimonious model.
 
 # Results
+Descriptive statistics for the participants are presented in @tbl-descriptive-table.
 
 ```{r}
-#| label: descriptive-table
+#| label: tbl-descriptive-table
 #| results: asis
+#| tbl-cap: "Descriptive statistics per year" 
 
 # Read the HTML file containing the descriptive table
 html_table_doc <- xml2::read_html("output/descriptive_table.html")
@@ -43,15 +45,20 @@ html_table_doc <- xml2::read_html("output/descriptive_table.html")
 # Extract the first HTML <table> element from the document
 desc_table <- xml2::xml_find_first(html_table_doc, ".//table")
 
-# Convert the extracted table to HTML and include it as-is in the rendered report
+# Add an HTML ID to the table
+xml2::xml_set_attr(desc_table, "id", "tbl-descriptive-table")
+
+# Convert the table to HTML and include it in the report
 knitr::asis_output(as.character(desc_table))
 ```
 
 ## LASSO
 
+@fig-lasso-paths show how predictor coefficients change as the regularization parameter ($\lambda$) increases across the five impairment groups and the group with neurotypical children. Increasing regularization shrinks coefficients towards zero, with the selected value of($\lambda$) (indicated by the dashed vertical line) reflecting the chosen degree of penalization. The figures illustrate differences in which predictors are retained and the magnitude and direction of their coefficients across groups.
+
 ```{r}
 #| include: FALSE
-#| fig-cap: "Descriptive statistics per year" 
+#| label: combine-path-figures
 # Locate the six LASSO coefficient-path plots
 plot_files <- sort(
   list.files(
@@ -97,10 +104,12 @@ magick::image_write(
 knitr::include_graphics("output/lasso_paths_combined.png")
 ```
 
+Across the six groups, the LASSO models showed broadly similar coefficient patterns (see @tbl-lasso-coefficients). Child age, child sex, family relationships, and having a single parent had negative coefficients, whereas parent anxiety had a positive coefficient.
+
 ```{r}
 #| label: tbl-lasso-coefficients
 #| echo: false
-#| fig-cap: "LASSO coefficients by group"
+#| tbl-cap: "LASSO coefficients by group"
 # Load the saved LASSO results
 lasso_results <- readRDS("data/lasso_results.rds")
 
@@ -168,7 +177,8 @@ coefficient_table %>%
     digits = 3,
     align = c("l", rep("c", ncol(coefficient_table) - 1)),
     escape = TRUE,
-    na = ""
+    na = "",
+    row.names = FALSE
   ) %>%
   kable_styling(
     bootstrap_options = NULL,
