@@ -36,3 +36,6 @@ data/data_with_mhp_factor.rds
 output/descriptive_table.html
 data/lasso_results.rds
 output/*.png
+/.quarto/
+output/summary-report.html
+*.html
