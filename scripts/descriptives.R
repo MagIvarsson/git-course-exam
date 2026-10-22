@@ -24,13 +24,22 @@ descriptive_table <- df_for_table %>%
   pivot_wider(
     names_from = year,
     values_from = Value
+  ) %>%
+  mutate(
+    across(
+      -Statistic,
+      ~ ifelse(
+        Statistic %in% c("N", "Boys, n", "Girls, n"),
+        as.character(as.integer(.x)),
+        sprintf("%.2f", .x)
+      )
+    )
   )
 
 # Format table
 table_html <- descriptive_table %>%
   kable(
     format = "html",
-    digits = 2,
     align = c("l", rep("c", ncol(descriptive_table) - 1))
   ) %>%
   kable_styling(
