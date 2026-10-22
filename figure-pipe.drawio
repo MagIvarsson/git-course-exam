@@ -94,7 +94,7 @@
         <mxCell id="_oEWQnfMBVqCEeOtZhNF-33" edge="1" parent="1" source="_oEWQnfMBVqCEeOtZhNF-28" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="_oEWQnfMBVqCEeOtZhNF-30" value="">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="_oEWQnfMBVqCEeOtZhNF-28" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;" value="lasso.R" vertex="1">
+        <mxCell id="_oEWQnfMBVqCEeOtZhNF-28" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;" value="lasso-regression.R" vertex="1">
           <mxGeometry height="40" width="120" x="40" y="460" as="geometry" />
         </mxCell>
         <mxCell id="o5BxvonF99Bf5N0zdXi3-5" edge="1" parent="1" source="_oEWQnfMBVqCEeOtZhNF-30" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;defaultLabelBackgroundColor=page;" target="o5BxvonF99Bf5N0zdXi3-3" value="">
