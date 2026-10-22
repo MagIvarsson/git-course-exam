@@ -15,15 +15,18 @@ The study was preregistered at [OSF](https://osf.io/96yqx/overview).
 
 ## R packages
 - `tidyverse` for data manipulation (dplyr), figures (ggplot2), etc.
-- `quarto` for rendering Quarto documents from R
 - `psych` for explorative factor analyses
 - `lavaan` for confirmatory factor analyses
-- `knitr` for formatting tables
+- `knitr` for rendering code chunks and integrating R outputs into documents
 - `kableExtra` for styling and formatting tables
+- `glmnet` for fitting LASSO regressions
+- `ggrepel` prevent labels in ggplot figures from overlapping
+- `xml2` for parsing and manipulating XML documents
+- `magick` for image processing and manipulation
 
 Install all packages at once:
 ```r
-install.packages(c("tidyverse", "quarto", "psych", "lavaan", "knitr", "kableExtra"))
+install.packages(c("tidyverse", "quarto", "psych", "lavaan", "knitr", "kableExtra", "glmnet", "ggrepel", "xml2", "magick"))
 ```
 
 # Usage
