@@ -1,5 +1,4 @@
 # Load packages
-library("ggplot2") # Create figure
 library("tidyr") # Data wrangling
 library("glmnet") # LASSO
 library("ggrepel") # Prevent labels from overlapping
