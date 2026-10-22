@@ -8,7 +8,7 @@ quarto::quarto_render(
 )
 
 # Move output to outpit folder
-source_file <- file.path("scripts", "check-data-quality.html")
+source_file <- "check-data-quality.html"
 target_file <- file.path("output", "check-data-quality.html")
 
 if (!file.exists(source_file)) {

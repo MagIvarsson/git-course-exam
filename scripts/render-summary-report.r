@@ -8,7 +8,7 @@ quarto::quarto_render(
 )
 
 # Move output to outpit folder
-source_file <- file.path("scripts", "summary-report.html")
+source_file <- "summary-report.html"
 target_file <- file.path("output", "summary-report.html")
 
 if (!file.exists(source_file)) {
